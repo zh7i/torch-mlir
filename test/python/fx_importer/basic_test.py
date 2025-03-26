@@ -18,7 +18,7 @@ from torch._functorch.aot_autograd import (
 )
 
 from torch_mlir import fx
-from torch_mlir.compiler_utils import run_pipeline_with_repro_report
+from torch_mlir.compiler_utils import OutputType, run_pipeline_with_repro_report
 
 
 def run(f):
@@ -26,6 +26,57 @@ def run(f):
     print("-" * len(f.__name__))
     f()
     print()
+
+#from ultralytics import YOLO
+from torchvision.models import resnet18
+
+@run
+def test_import_minimalLLAMA():
+
+    class MiniLLaMA(nn.Module):
+        def __init__(self, hidden_dim=256, num_heads=4, num_layers=2):
+            super().__init__()
+            self.embed = nn.Embedding(1000, hidden_dim)
+            self.layers = nn.ModuleList([
+                nn.TransformerEncoderLayer(d_model=hidden_dim, nhead=num_heads, dropout=0)
+                for _ in range(num_layers)
+            ])
+            self.out = nn.Linear(hidden_dim, 1000)
+
+        def forward(self, x):
+            x = self.embed(x)
+            for layer in self.layers:
+                x = layer(x)
+            return self.out(x)
+
+    model = MiniLLaMA()
+    model = torch.fx.symbolic_trace(model)
+    dummy_input = torch.randint(0, 1000, (10, 32))
+    m = fx.export_and_import(model, dummy_input, output_type=OutputType.LINALG_ON_TENSORS, enable_graph_printing=True )
+    exit(0)
+
+@run
+def test_import_resnet18():
+    # Tests the basic structural premises of import_frozen_exported_program,
+    # namely that free tensors (buffers) and parameters are treated as
+    # literals and frozen.
+
+    class MyModel(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.conv = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1)
+            self.relu = nn.ReLU()
+
+        def forward(self, x):
+            return self.relu(self.conv(x))
+
+    model = resnet18()
+    #model = MyModel()
+    dummy_input = torch.randn(1, 3, 224, 224)
+    m = fx.export_and_import(model, dummy_input, output_type=OutputType.TOSA, enable_graph_printing=True )
+
+
+    #print(m)
 
 
 @run
@@ -61,7 +112,7 @@ def test_import_frozen_exported_program():
         def forward(self, x):
             return torch.tanh(x) * get_a() * self.b * self.p
 
-    m = fx.export_and_import(Basic(), torch.randn(3, 4))
+    m = fx.export_and_import(Basic(), torch.randn(3, 4), output_type=OutputType.TOSA, )
     print(m)
 
 

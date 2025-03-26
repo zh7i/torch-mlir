@@ -95,7 +95,7 @@ def run_pipeline_with_repro_report(
             pm = PassManager.parse(pipeline)
             if enable_ir_printing:
                 ctx.enable_multithreading(False)
-                pm.enable_ir_printing()
+                pm.enable_ir_printing(large_elements_limit=64)
             pm.run(module.operation)
     except Exception as e:
         # TODO: More robust.
@@ -193,6 +193,7 @@ def lower_mlir_module(verbose, output_type, module):
             module,
             "builtin.module(torch-backend-to-tosa-backend-pipeline)",
             "Lowering Torch Backend IR -> TOSA Backend IR",
+            enable_ir_printing=True
         )
         if verbose:
             print("\n====================")
@@ -205,6 +206,7 @@ def lower_mlir_module(verbose, output_type, module):
             module,
             "builtin.module(torch-backend-to-linalg-on-tensors-backend-pipeline)",
             "Lowering Torch Backend IR -> Linalg-on-Tensors Backend IR",
+            enable_ir_printing=True
         )
         if verbose:
             print("\n====================")
