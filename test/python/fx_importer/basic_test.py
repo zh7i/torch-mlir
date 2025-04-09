@@ -73,6 +73,7 @@ def test_import_resnet18():
     model = resnet18()
     #model = MyModel()
     dummy_input = torch.randn(1, 3, 224, 224)
+    # enable_graph_printing will print fx IR
     m = fx.export_and_import(model, dummy_input, output_type=OutputType.TOSA, enable_graph_printing=True )
 
 
