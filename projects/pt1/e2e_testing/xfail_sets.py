@@ -520,6 +520,7 @@ FX_IMPORTER_XFAIL_SET = {
     "ReflectionPad3dModuleBack_basic",
     # RuntimeError: Unknown function SliceOutOfLowerBoundEndIndexModule
     "SliceOutOfLowerBoundEndIndexModule_basic",
+    "NativeGroupNormModule_basic",
 }
 
 FX_IMPORTER_CRASHING_SET = LINALG_CRASHING_SET | {
@@ -954,6 +955,7 @@ FX_IMPORTER_STABLEHLO_XFAIL_SET = {
     "AtenSymConstrainRange_basic",
     "AtenSymConstrainRangeForSize_basic",
     "Aten_AssertScalar_basic",
+    "NativeGroupNormModule_basic",
 }
 
 FX_IMPORTER_STABLEHLO_CRASHING_SET = {
@@ -2702,6 +2704,7 @@ ONNX_XFAIL_SET = {
     "AdaptiveMaxPool2dDynamicNoBatch_basic",
     "AdaptiveMaxPool2dDynamicWithIndices_basic",
     "AdaptiveMaxPool2dDynamic_basic",
+    "AdaptiveMaxPool2dFixedKernelStrideSizeStaticModule_basic",
     "AdaptiveMaxPool2dStaticWithIndices_basic",
     "AdaptiveMaxPool2dStatic_basic",
     "AdaptiveMaxPool3dDynamicNoBatch_basic",
@@ -3767,6 +3770,9 @@ FX_IMPORTER_TOSA_XFAIL_SET = {
     "TorchPrimLoopWhileLikeModule_basic",
     "TraceModule_empty",
     "TraceUnsignedIntModule_empty",
+    "TransposedConv1dNegativePadding_basic",
+    "TransposedConv2dNegativePadding_basic",
+    "TransposedConv3dNegativePadding_basic",
     "UnsafeViewCollapseDynamicWithAtenSizeIntModule_basic",
     "UpSampleNearest2dBackwardScalesNone_basic",
     "UpSampleNearest2dBackward_basic",
@@ -4755,6 +4761,9 @@ ONNX_TOSA_XFAIL_SET = {
     "TraceSignedIntModule_basic",
     "TraceUnsignedIntModule_basic",
     "TraceUnsignedIntModule_empty",
+    "TransposedConv1dNegativePadding_basic",
+    "TransposedConv2dNegativePadding_basic",
+    "TransposedConv3dNegativePadding_basic",
     "TupleModule_basic",
     "TypeAsDifferentModule_basic",
     "TypeConversionF32ToF64Module_basic",

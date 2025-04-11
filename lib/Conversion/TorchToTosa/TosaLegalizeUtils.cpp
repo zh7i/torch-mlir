@@ -54,9 +54,13 @@ Value buildRescale(PatternRewriter &rewriter, Operation *op,
 
   auto rescale_op = CreateOpAndInfer<tosa::RescaleOp>(
       rewriter, op->getLoc(), output_type, input_val, multiplier_val, shift_val,
-      rewriter.getI32IntegerAttr(static_cast<int32_t>(input_zp)),
-      rewriter.getI32IntegerAttr(static_cast<int32_t>(output_zp)),
-      rewriter.getBoolAttr(scale32), rewriter.getBoolAttr(double_round),
+      rewriter.create<arith::ConstantOp>(
+        op->getLoc(), rewriter.getI32Type(), rewriter.getI32IntegerAttr(static_cast<int32_t>(input_zp))),
+      rewriter.create<arith::ConstantOp>(
+        op->getLoc(), rewriter.getI32Type(), rewriter.getI32IntegerAttr(static_cast<int32_t>(output_zp))),
+      rewriter.getBoolAttr(scale32),
+      double_round ? rewriter.getStringAttr("DOUBLE_ROUND")
+                   : rewriter.getStringAttr("SINGLE_ROUND"),
       rewriter.getBoolAttr(false), rewriter.getBoolAttr(input_unsigned),
       rewriter.getBoolAttr(output_unsigned));
 
@@ -117,9 +121,12 @@ Value buildRescaleOpConvOutput(PatternRewriter &rewriter, Operation *op,
 
     auto rescale_op = CreateOpAndInfer<tosa::RescaleOp>(
         rewriter, op->getLoc(), output_type, conv_val, multiplier_val,
-        shift_val, rewriter.getI32IntegerAttr(0),
-        rewriter.getI32IntegerAttr(output_zp), rewriter.getBoolAttr(scale32),
-        rewriter.getBoolAttr(true), rewriter.getBoolAttr(false),
+        shift_val,
+        rewriter.create<arith::ConstantOp>(
+          op->getLoc(), rewriter.getI32Type(), rewriter.getI32IntegerAttr(0)),
+          rewriter.create<arith::ConstantOp>(
+            op->getLoc(), rewriter.getI32Type(), rewriter.getI32IntegerAttr(output_zp)), rewriter.getBoolAttr(scale32),
+        rewriter.getStringAttr("DOUBLE_ROUND"), rewriter.getBoolAttr(false),
         rewriter.getBoolAttr(input_unsigned),
         rewriter.getBoolAttr(output_unsigned));
 
@@ -161,9 +168,11 @@ Value buildRescaleOpConvOutput(PatternRewriter &rewriter, Operation *op,
 
     auto rescale_op = CreateOpAndInfer<tosa::RescaleOp>(
         rewriter, op->getLoc(), output_type, conv_val, multiplier_val,
-        shift_val, rewriter.getI32IntegerAttr(0),
-        rewriter.getI32IntegerAttr(output_zp), rewriter.getBoolAttr(scale32),
-        rewriter.getBoolAttr(true), rewriter.getBoolAttr(true),
+        shift_val,       rewriter.create<arith::ConstantOp>(
+          op->getLoc(), rewriter.getI32Type(), rewriter.getI32IntegerAttr(0)),
+          rewriter.create<arith::ConstantOp>(
+            op->getLoc(), rewriter.getI32Type(), rewriter.getI32IntegerAttr(output_zp)), rewriter.getBoolAttr(scale32),
+        rewriter.getStringAttr("DOUBLE_ROUND"), rewriter.getBoolAttr(true),
         rewriter.getBoolAttr(input_unsigned),
         rewriter.getBoolAttr(output_unsigned));
 
