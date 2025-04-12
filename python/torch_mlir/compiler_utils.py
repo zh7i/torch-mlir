@@ -85,7 +85,7 @@ def run_pipeline_with_repro_report(
     try:
         sys.stderr = StringIO()
         asm_for_error_report = module.operation.get_asm(
-            large_elements_limit=10, enable_debug_info=True
+            large_elements_limit=10, enable_debug_info=False
         )
         # Lower module in place to make it ready for compiler backends.
         with module.context as ctx:
